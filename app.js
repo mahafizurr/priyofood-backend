@@ -15,6 +15,9 @@ app.use(
   })
 );
 
+// Middleware
+app.use(express.json()); // Built-in middleware for parsing JSON
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGODB_URI, {
@@ -23,9 +26,6 @@ mongoose
   })
   .then(() => console.log("Connected to MongoDB"))
   .catch((err) => console.error("Could not connect to MongoDB", err));
-
-// Middleware
-app.use(express.json()); // Built-in middleware for parsing JSON
 
 const billingSchema = new mongoose.Schema({
   fullName: { type: String, required: true },
