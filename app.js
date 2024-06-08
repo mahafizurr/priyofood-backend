@@ -2,10 +2,19 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
+const cors = require("cors");
 const billingDetailsRoutes = require("./routes/billingDetails");
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Configure CORS
+const corsOptions = {
+  origin: "https://priyofood-backend.vercel.app", // Replace with your frontend URL
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // Connect to MongoDB
 mongoose
