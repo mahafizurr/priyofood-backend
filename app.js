@@ -1,37 +1,42 @@
-require("dotenv").config();
 const express = require("express");
-const mongoose = require("mongoose");
-const bodyParser = require("body-parser");
 const cors = require("cors");
-const billingDetailsRoutes = require("./routes/billingDetails");
+const mongoose = require("mongoose");
 
 const app = express();
-const port = process.env.PORT || 3000;
 
-// Configure CORS
-const corsOptions = {
-  origin: "https://www.priyofruits.com", // Replace with your frontend URL
-  optionsSuccessStatus: 200,
-};
-
-app.use(cors(corsOptions));
-
-// Connect to MongoDB
-mongoose
-  .connect(process.env.MONGODB_URI, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
+// CORS configuration
+app.use(
+  cors({
+    origin: "https://www.priyofruits.com", // Allow requests from this origin
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    credentials: true, // Allow cookies to be sent with requests
   })
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("Could not connect to MongoDB", err));
+);
 
-// Middleware
-app.use(bodyParser.json());
+app.use(express.json());
 
-// Routes
-app.use("/billingDetails", billingDetailsRoutes);
+const billingSchema = new mongoose.Schema({
+  fullName: String,
+  mobileNumber: String,
+  district: String,
+  fullAddress: String,
+  transactionNumber: String,
+  country: { type: String, default: "Bangladesh" },
+});
 
-// Start the server
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+const Billing = mongoose.model("Billing", billingSchema);
+
+app.post("/billingDetails", async (req, res) => {
+  try {
+    const billing = new Billing(req.body);
+    await billing.save();
+    res.status(201).send(billing);
+  } catch (error) {
+    res.status(400).send({ error: "Failed to save billing details" });
+  }
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
