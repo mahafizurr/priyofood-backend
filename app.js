@@ -10,7 +10,7 @@ const port = process.env.PORT || 3000;
 
 // Configure CORS
 const corsOptions = {
-  origin: "https://priyofood-backend.vercel.app", // Replace with your frontend URL
+  origin: "https://www.priyofruits.com", // Replace with your frontend URL
   optionsSuccessStatus: 200,
 };
 
