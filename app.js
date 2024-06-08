@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
@@ -13,14 +15,24 @@ app.use(
   })
 );
 
-app.use(express.json());
+// Connect to MongoDB
+mongoose
+  .connect(process.env.MONGODB_URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("Connected to MongoDB"))
+  .catch((err) => console.error("Could not connect to MongoDB", err));
+
+// Middleware
+app.use(express.json()); // Built-in middleware for parsing JSON
 
 const billingSchema = new mongoose.Schema({
-  fullName: String,
-  mobileNumber: String,
-  district: String,
-  fullAddress: String,
-  transactionNumber: String,
+  fullName: { type: String, required: true },
+  mobileNumber: { type: String, required: true },
+  district: { type: String, required: true },
+  fullAddress: { type: String, required: true },
+  transactionNumber: { type: String, required: true },
   country: { type: String, default: "Bangladesh" },
 });
 
@@ -32,6 +44,7 @@ app.post("/billingDetails", async (req, res) => {
     await billing.save();
     res.status(201).send(billing);
   } catch (error) {
+    console.error("Error saving billing details:", error);
     res.status(400).send({ error: "Failed to save billing details" });
   }
 });
